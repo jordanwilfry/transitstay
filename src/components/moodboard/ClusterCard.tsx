@@ -9,6 +9,8 @@ interface ClusterCardProps {
   isSelected?: boolean;
   className?: string;
   onClick?: () => void;
+  onEdit?: (cluster: Cluster) => void;
+  onDelete?: (clusterId: string) => void;
 }
 
 export function ClusterCard({
@@ -17,11 +19,33 @@ export function ClusterCard({
   isSelected,
   onClick,
   className,
+  onEdit,
+  onDelete,
 }: ClusterCardProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const handleMenuClick = () => {
+  const handleMenuClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (cluster && onEdit) {
+      onEdit(cluster);
+      setIsMenuOpen(false);
+    }
+  };
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (cluster && onDelete) {
+      const confirmed = window.confirm(`Are you sure you want to delete "${cluster.title}" cluster?`);
+      if (confirmed) {
+        onDelete(cluster.id);
+        setIsMenuOpen(false);
+      }
+    }
   };
 
   if (isAddNew) {
@@ -63,7 +87,7 @@ export function ClusterCard({
       onClick={onClick}
       className={`${className}
         rounded-xl sm:rounded-2xl p-4 sm:p-6 cursor-pointer transition-all duration-200 min-h-[120px] sm:min-h-[160px] h-[500px]
-        text-white relative overflow-hidden flex flex-col justify-center items-center
+        text-white relative overflow-hidden !flex flex-col !justify-center !items-center my-auto
         ${
           isSelected
             ? "ring-1 ring-white/50 shadow-xl"
@@ -81,20 +105,30 @@ export function ClusterCard({
         <MoreVertical size={20} />
       </button>
       {isMenuOpen && (
-        <div className="absolute top-0 left-0 w-full h-full bg-black/50 flex items-center justify-center p-2">
-            <div className="absolute top-2 right-2 w-8 rounded-full h-8 bg-white flex items-center hover:rotate-180 transition-all hover:scale-105 justify-center p-2" onClick={()=>{setIsMenuOpen(false)}}>
+        <div className="absolute top-0 left-0 w-full h-full bg-black/50 flex items-center justify-center p-2 z-10">
+            <div className="absolute top-2 right-2 w-8 rounded-full h-8 bg-white flex items-center hover:rotate-180 transition-all hover:scale-105 justify-center p-2" onClick={(e) => {e.stopPropagation(); setIsMenuOpen(false)}}>
             <X className="text-red-600" />
             </div>
           <div className="flex flex-col  justify-center gap-2">
-            <button className="text-white bg-white/10 rounded-md p-2 hover:bg-white/20 transition-colors">Edit</button>
-            <button className="text-white bg-white/10 rounded-md p-2 hover:bg-white/20 transition-colors">Delete</button>
+            <button 
+              onClick={handleEdit}
+              className="text-white bg-white/10 rounded-md p-2 hover:bg-white/20 cursor-pointer transition-colors"
+            >
+              Edit
+            </button>
+            <button 
+              onClick={handleDelete}
+              className="text-white bg-white/10 rounded-md p-2 hover:bg-red-500/20 cursor-pointer transition-colors"
+            >
+              Delete
+            </button>
           </div>
         </div>
       )}
 
       <div className="flex justify-center mt-8 mb-6">
-        <div className="w-20 h-20 bg-white/90 rounded-full flex items-center justify-center">
-          <div className="relative">{cluster.icon || "📌"}</div>
+        <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center">
+          <div className="relative text-4xl z-0">{cluster.icon || "📌"}</div>
         </div>
       </div>
 

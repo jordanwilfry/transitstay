@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button  from '../ui/Button';
 import { X } from 'lucide-react';
+import { Cluster } from '../../types';
 
 interface CreateClusterModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (title: string, description?: string, icon?: string, gradientFrom?: string, gradientTo?: string) => void;
   loading?: boolean;
+  editCluster?: Cluster | null;
 }
 
 // Available icons for clusters
@@ -22,13 +24,32 @@ const GRADIENT_COLORS = [
   '#F1948A', '#85929E', '#F39C12', '#8E44AD', '#3498DB', '#E74C3C'
 ];
 
-export function CreateClusterModal({ isOpen, onClose, onSubmit, loading }: CreateClusterModalProps) {
+export function CreateClusterModal({ isOpen, onClose, onSubmit, loading, editCluster }: CreateClusterModalProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [selectedIcon, setSelectedIcon] = useState('📌');
   const [gradientFrom, setGradientFrom] = useState('#FF6B6B');
   const [gradientTo, setGradientTo] = useState('#4ECDC4');
   const [errors, setErrors] = useState<{ title?: string }>({});
+
+  // Initialize form fields when editing
+  useEffect(() => {
+    if (editCluster) {
+      setTitle(editCluster.title);
+      setDescription(editCluster.description || '');
+      setSelectedIcon(editCluster.icon || '📌');
+      setGradientFrom(editCluster.gradientFrom || '#FF6B6B');
+      setGradientTo(editCluster.gradientTo || '#4ECDC4');
+    } else {
+      // Reset form when not editing
+      setTitle('');
+      setDescription('');
+      setSelectedIcon('📌');
+      setGradientFrom('#FF6B6B');
+      setGradientTo('#4ECDC4');
+    }
+    setErrors({});
+  }, [editCluster, isOpen]);
 
   const handleCreateClick = () => {
     // Trigger form validation and submission
@@ -83,7 +104,9 @@ export function CreateClusterModal({ isOpen, onClose, onSubmit, loading }: Creat
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-100">
-          <h2 className="text-xl font-semibold text-gray-900">Add new Cluster</h2>
+          <h2 className="text-xl font-semibold text-gray-900">
+            {editCluster ? 'Edit Cluster' : 'Add new Cluster'}
+          </h2>
           <button
             onClick={handleClose}
             className="p-1 hover:bg-gray-100 rounded-full transition-colors"
@@ -95,7 +118,10 @@ export function CreateClusterModal({ isOpen, onClose, onSubmit, loading }: Creat
         {/* Content */}
         <form onSubmit={handleSubmit} className="p-6 space-y-6" id="cluster-form">
           <p className="text-gray-600 text-sm">
-            Let's create you a whole new cluster in your mood board. Fill in the form to create.
+            {editCluster 
+              ? "Update your cluster details below." 
+              : "Let's create you a whole new cluster in your mood board. Fill in the form to create."
+            }
           </p>
           
           <div className="space-y-6">
@@ -227,9 +253,9 @@ export function CreateClusterModal({ isOpen, onClose, onSubmit, loading }: Creat
           
           <Button
             type="black"
-            text={loading ? "Creating..." : "Create"}
+            text={loading ? (editCluster ? "Updating..." : "Creating...") : (editCluster ? "Update" : "Create")}
             disabled={loading}
-            className="w-full"
+            className="w-full flex justify-center items-center"
             onClick={handleCreateClick}
           />
         </form>

@@ -15,14 +15,14 @@ const Button = ({ text, type, icon, className, onClick, disabled }: Props) => {
 
   const typeClasses =
     type === "black"
-      ? "bg-zinc-700/30 text-zinc-100 hover:bg-zinc-800/60 hover:scale-105 disabled:hover:scale-100 disabled:hover:bg-zinc-700/30"
+      ? "bg-zinc-700/30 text-zinc-100 hover:bg-zinc-800/60 disabled:hover:scale-100 disabled:hover:bg-zinc-700/30"
       : type === "gray"
-      ? "bg-[rgb(255_255_255_/_0.06)] text-white hover:bg-[rgb(255_255_255_/_0.1)] hover:scale-105 disabled:hover:scale-100 disabled:hover:bg-[rgb(255_255_255_/_0.06)]"
-      : "bg-white/80 text-zinc-500 hover:bg-white hover:text-zinc-700 hover:scale-105 disabled:hover:scale-100 disabled:hover:bg-white/80 disabled:hover:text-zinc-500";
+      ? "bg-[rgb(255_255_255_/_0.06)] text-white hover:bg-[rgb(255_255_255_/_0.1)] disabled:hover:scale-100 disabled:hover:bg-[rgb(255_255_255_/_0.06)]"
+      : "bg-white/80 text-zinc-500 hover:bg-white hover:text-zinc-700 disabled:hover:scale-100 disabled:hover:bg-white/80 disabled:hover:text-zinc-500";
 
   return (
     <button
-      className={`${baseClasses} ${typeClasses} ${className}`}
+      className={`${baseClasses} ${typeClasses} ${className} cursor-pointer`}
       onClick={onClick}
       disabled={disabled}
     >

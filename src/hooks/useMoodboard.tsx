@@ -209,7 +209,7 @@ export function useMoodboard() {
   );
 
   const addPostsToCluster = useCallback(
-    async (clusterId: string) => {
+    async (clusterId: string, numberOfPosts: number = 10) => {
       if (!moodboard) return;
       
       const cluster = moodboard.clusters.find(c => c.id === clusterId);
@@ -218,7 +218,7 @@ export function useMoodboard() {
       setLoading(true);
       try {
         // Generate posts based on cluster title using Pexels API
-        await generatePostsForCluster(clusterId, cluster.title.toLowerCase(), 10);
+        await generatePostsForCluster(clusterId, cluster.title.toLowerCase(), numberOfPosts);
         toast.success(`Added posts to ${cluster.title}!`);
       } catch (error) {
         toast.error('Failed to add posts');
